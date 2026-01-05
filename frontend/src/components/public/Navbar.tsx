@@ -61,7 +61,7 @@ const Navbar = () => {
                 <div className="w-4 h-4 bg-white rounded-sm"></div>
               </div>
             </div> */}
-            <img src="/logo.png" alt="Market Revolution" className="w-10 h-10" />
+            <img src="/logo.png" alt="Market Revolution" className="h-14" />
             {/* <span className="text-xl font-bold text-gray-900">MARKET REVOLUTION</span> */}
           </div>
 

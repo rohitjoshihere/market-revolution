@@ -10,51 +10,50 @@ const Footer = () => {
     >
       <div className="container max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Section - Logo, Tagline, and Social Media */}
-        
+
 
         {/* Links Section - Three Columns */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12 mb-12">
           {/* Company Column */}
-          
-          <div className="mb-">
-          <div className="flex items-center space-x-3 mb-3">
-            <img src="/logo.png" alt="Market Revolution" className="w-10 h-10" />
-            <span className="text-2xl font-bold text-white">MARKET REVOLUTION</span>
+
+          <div>
+            <div className="flex items-center space-x-3 mb-3">
+              <img src="/logo-light.png" alt="Market Revolution" className="h-14" />
+            </div>
+            <p className="text-white/80 mb-6 max-w-2xl">
+              Transparent, fast, and actionable insights for healthcare and pharmaceutical markets.
+            </p>
+            {/* Social Media Icons */}
+            <div className="flex items-center space-x-4">
+              <a
+                href="https://linkedin.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+                aria-label="LinkedIn"
+              >
+                <Linkedin className="w-5 h-5 text-white" />
+              </a>
+              <a
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+                aria-label="Twitter"
+              >
+                <Twitter className="w-5 h-5 text-white" />
+              </a>
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+                aria-label="Facebook"
+              >
+                <Facebook className="w-5 h-5 text-white" />
+              </a>
+            </div>
           </div>
-          <p className="text-white/80 mb-6 max-w-2xl">
-            Transparent, fast, and actionable insights for healthcare and pharmaceutical markets.
-          </p>
-          {/* Social Media Icons */}
-          <div className="flex items-center space-x-4">
-            <a
-              href="https://linkedin.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-              aria-label="LinkedIn"
-            >
-              <Linkedin className="w-5 h-5 text-white" />
-            </a>
-            <a
-              href="https://twitter.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-              aria-label="Twitter"
-            >
-              <Twitter className="w-5 h-5 text-white" />
-            </a>
-            <a
-              href="https://facebook.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-              aria-label="Facebook"
-            >
-              <Facebook className="w-5 h-5 text-white" />
-            </a>
-          </div>
-        </div>
           <div>
             <h4 className="text-white font-bold text-lg mb-4">Company</h4>
             <ul className="space-y-2">
