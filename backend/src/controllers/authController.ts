@@ -46,16 +46,17 @@ export const login = async (req: Request, res: Response) => {
       throw new Error('JWT_SECRET not configured');
     }
 
+    const expiresIn: string = process.env.JWT_EXPIRES_IN || '7d';
     const token = jwt.sign(
       {
         id: user.id,
         email: user.email,
         role: user.role,
       },
-      jwtSecret,
+      jwtSecret as string,
       {
-        expiresIn: process.env.JWT_EXPIRES_IN || '7d',
-      }
+        expiresIn: expiresIn,
+      } as jwt.SignOptions
     );
 
     res.json({

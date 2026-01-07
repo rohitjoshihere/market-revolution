@@ -1,4 +1,4 @@
-import { Users, Building2, Zap, Clock, Check } from 'lucide-react';
+import { Users, Building2, Zap, Clock } from 'lucide-react';
 
 const DomainExcellenceSection = () => {
     return (

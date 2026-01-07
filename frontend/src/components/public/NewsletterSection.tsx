@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Mail } from 'lucide-react';
 
 const NewsletterSection = () => {
   const [email, setEmail] = useState('');

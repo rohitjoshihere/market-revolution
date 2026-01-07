@@ -1,4 +1,4 @@
-import { Users, Lightbulb, Clock, Trophy, Check, X } from 'lucide-react';
+import { Users, Lightbulb, Clock, Trophy } from 'lucide-react';
 
 const AnalystExperienceSection = () => {
   return (
