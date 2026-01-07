@@ -1,4 +1,4 @@
-import Navbar from '@/components/public/Navbar';
+import PageLayout from '@/components/layout/PageLayout';
 import AnalystExperienceSection from '@/components/public/AnalystExperienceSection';
 import HeroSection from '@/components/public/HeroSection';
 import HowWeWorkSection from '@/components/public/HowWeWorkSection';
@@ -8,12 +8,10 @@ import TestimonialsSection from '@/components/public/TestimonialsSection';
 import FreeSampleSection from '@/components/public/FreeSampleSection';
 import ReadyToExperienceSection from '@/components/public/ReadyToExperienceSection';
 import NewsletterSection from '@/components/public/NewsletterSection';
-import Footer from '@/components/public/Footer';
 
 const HomePage = () => {
   return (
-    <div className="min-h-screen">
-      <Navbar />
+    <PageLayout>
       <div
         style={{
           background: 'linear-gradient(135deg, #FFFFFF 0%, #F3F2F1 50%, #FFFFFF 100%)'
@@ -29,8 +27,7 @@ const HomePage = () => {
       <FreeSampleSection />
       <ReadyToExperienceSection />
       <NewsletterSection />
-      <Footer />
-    </div>
+    </PageLayout>
   );
 };
 

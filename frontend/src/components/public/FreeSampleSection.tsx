@@ -66,7 +66,7 @@ const FreeSampleSection = () => {
         background: "linear-gradient(90deg, #283F3B 0%, rgba(40, 63, 59, 0.95) 100%)",
       }}
       className="w-full py-0 mx-auto">
-      <div className="container max-w-8xl mx-auto flex gap-0">
+      <div className="container max-w-8xl mx-auto flex md:flex-row flex-col gap-0">
         {/* Left Column - Dark Green Background (2/3 width) */}
         <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">

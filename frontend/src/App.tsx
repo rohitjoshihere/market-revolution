@@ -3,6 +3,10 @@ import { Toaster } from '@/components/ui/toaster';
 
 // Public routes
 import HomePage from '@/pages/public/HomePage';
+import AboutPage from '@/pages/public/AboutPage';
+import ContactPage from '@/pages/public/ContactPage';
+import ServicesPage from '@/pages/public/ServicesPage';
+import ReportsPage from '@/pages/public/ReportsPage';
 
 // Admin routes
 import AdminDashboard from '@/pages/admin/AdminDashboard';
@@ -14,6 +18,10 @@ function App() {
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/services" element={<ServicesPage />} />
+        <Route path="/reports" element={<ReportsPage />} />
         
         {/* Admin routes */}
         <Route path="/admin/login" element={<AdminLogin />} />

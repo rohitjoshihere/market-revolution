@@ -2,12 +2,7 @@ import { MapPin, Phone, Mail, Linkedin, Twitter, Facebook } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer
-      className="w-full py-12 lg:py-16"
-      style={{
-        background: 'linear-gradient(135deg, #283F3B 0%, rgba(40, 63, 59, 0.95) 100%)',
-      }}
-    >
+    <footer className="w-full py-12 lg:py-16 bg-[#283F3B]" >
       <div className="container max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Section - Logo, Tagline, and Social Media */}
 

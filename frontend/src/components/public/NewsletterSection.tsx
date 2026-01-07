@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Mail } from 'lucide-react';
 
 const NewsletterSection = () => {
-  const [email, setEmail] = useState('your@email.com');
+  const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -50,19 +50,18 @@ const NewsletterSection = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="your@email.com"
-                    className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary transition-colors"
+                    className="flex-1 px-4 py-3 placeholder: text-[#6B7280] rounded-lg focus:outline-none focus:border-primary transition-colors"
                     required
                   />
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-6 py-3 bg-white text-primary rounded-lg font-medium hover:shadow-md hover:bg-gray-100 transition-colors flex items-center justify-center disabled:opacity-50"
+                    className="px-6 py-3 bg-white text-primary rounded-lg font-semibold hover:shadow-md hover:bg-gray-100 transition-colors flex items-center justify-center disabled:opacity-50"
                   >
                     {isSubmitting ? (
                       'Subscribing...'
                     ) : (
                       <>
-                        <Mail className="w-4 h-4 mr-2" />
                         Subscribe
                       </>
                     )}

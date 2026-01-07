@@ -25,8 +25,8 @@ const HowWeWorkSection = () => {
                     {/* Service Cards */}
                     <div className="max-w-8xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                         {/* Card 1: Express Insights */}
-                        <div className="bg-white border-2 rounded-[12px] border-[#E5E7EB] rounded-xl p-8 hover:shadow-lg transition-all duration-300">
-                            <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-6">
+                        <div className="bg-white relative border-2 rounded-[12px] border-[#E5E7EB] rounded-xl p-8 hover:shadow-lg transition-all duration-300">
+                            <div className="w-16 h-16 bg-primary/20 rounded-[12px] flex items-center justify-center mb-6">
                                 <Zap className="w-8 h-8 text-primary" />
                             </div>
                             <h3 className="text-2xl font-bold text-gray-900 mb-2">Express Insights</h3>
@@ -61,20 +61,22 @@ const HowWeWorkSection = () => {
                                     <span className="text-gray-700 text-sm">Executive summary report</span>
                                 </li>
                             </ul>
-                            <button className="w-full px-6 py-3 bg-[#FFF1EB] text-gray-900 rounded-lg font-medium hover:bg-orange-200 transition-colors flex items-center justify-center">
-                                Get Started <ArrowRight className="ml-2 w-4 h-4" />
-                            </button>
+                            <div className='flex w-full justify-center absolute bottom-8 end-0'>
+                                <button className="w-[90%] px-6 py-3 bg-[#FFF1EB] text-gray-900 rounded-lg font-medium hover:bg-orange-200 transition-colors flex items-center justify-center">
+                                    Get Started <ArrowRight className="ml-2 w-4 h-4" />
+                                </button>
+                            </div>
                         </div>
 
                         {/* Card 2: Deep Dive Reports (Most Popular - Highlighted) */}
-                        <div className="bg-white border-2 rounded-[12px] border-[#E5E7EB] rounded-xl p-8 hover:shadow-xl hover:scale-105 hover:border-2 hover:border-primary transition-all duration-300 relative pt-12">
+                        <div className="bg-white border-2 overflow-hidden rounded-[12px] border-primary rounded-xl p-8 scale-105 transition-all duration-300 relative pt-12">
                             {/* Most Popular Badge */}
-                            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
-                                <div className="bg-primary text-white px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">
+                            <div className="absolute w-full top-0 top-0 end-0 z-10">
+                                <div className="bg-primary w-full text-center text-white px-6 py-2 text-md font-medium">
                                     Most Popular for Strategic Planning
                                 </div>
                             </div>
-                            <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-6">
+                            <div className="w-16 h-16 bg-primary/20 rounded-[12px] flex items-center justify-center mb-6">
                                 <BookOpen className="w-8 h-8 text-primary" />
                             </div>
                             <h3 className="text-2xl font-bold text-gray-900 mb-2">Deep Dive Reports</h3>
@@ -117,14 +119,16 @@ const HowWeWorkSection = () => {
                                     <span className="text-gray-700 text-sm">200+ page detailed report</span>
                                 </li>
                             </ul>
-                            <button className="w-full px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors flex items-center justify-center">
-                                Get Started <ArrowRight className="ml-2 w-4 h-4" />
-                            </button>
+                            <div className='flex w-full justify-center absolute bottom-0 end-0'>
+                                <button className="w-[85%] px-6 py-3 bg-primary text-white rounded-t-lg font-medium hover:bg-primary/90 transition-colors flex items-center justify-center">
+                                    Get Started <ArrowRight className="ml-2 w-4 h-4" />
+                                </button>
+                            </div>
                         </div>
 
                         {/* Card 3: Consultation Bundles */}
-                        <div className="bg-white border-2 rounded-[12px] border-[#E5E7EB] rounded-xl p-8 hover:shadow-lg transition-all duration-300">
-                            <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-6">
+                        <div className="bg-white h-[800px] relative border-2 rounded-[12px] border-[#E5E7EB] rounded-xl p-8 hover:shadow-lg transition-all duration-300">
+                            <div className="w-16 h-16 bg-primary/20 rounded-[12px] flex items-center justify-center mb-6">
                                 <Users className="w-8 h-8 text-primary" />
                             </div>
                             <h3 className="text-2xl font-bold text-gray-900 mb-2">Consultation Bundles</h3>
@@ -167,9 +171,11 @@ const HowWeWorkSection = () => {
                                     <span className="text-gray-700 text-sm">Annual market outlook briefing</span>
                                 </li>
                             </ul>
-                            <button className="w-full px-6 py-3 bg-[#FFF1EB] text-gray-900 rounded-lg font-medium hover:bg-orange-200 transition-colors flex items-center justify-center">
-                                Get Started <ArrowRight className="ml-2 w-4 h-4" />
-                            </button>
+                            <div className='flex w-full justify-center absolute bottom-8 end-0'>
+                                <button className="w-[90%] px-6 py-3 bg-[#FFF1EB] text-gray-900 rounded-lg font-medium hover:bg-orange-200 transition-colors flex items-center justify-center">
+                                    Get Started <ArrowRight className="ml-2 w-4 h-4" />
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -186,8 +192,8 @@ const HowWeWorkSection = () => {
                             Talk to an Analyst <ArrowRight className="ml-2 w-4 h-4" />
                         </button>
                     </div>
-            </div>
-                </section>
+                </div>
+            </section>
             {/* Why Healthcare Leaders Trust Us Section */}
 
             <section
