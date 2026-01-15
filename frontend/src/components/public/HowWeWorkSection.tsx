@@ -1,10 +1,32 @@
 import { Zap, BookOpen, Users, Check, ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const HowWeWorkSection = () => {
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.2
+            }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: 0.6,
+                ease: "easeOut"
+            }
+        }
+    };
+
     return (
         <>
             <section
-
                 style={{
                     background: "linear-gradient(180deg, #F3F2F1 0%, #FFFFFF 100%)",
                 }}>
@@ -13,19 +35,31 @@ const HowWeWorkSection = () => {
                 {/* How We Work Section */}
                 <div
                     id="services" className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-                    <div className="max-w-4xl mx-auto text-center mb-12">
+                    <motion.div
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, margin: "-100px" }}
+                        variants={itemVariants}
+                        className="max-w-4xl mx-auto text-center mb-12">
                         <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
                             How We Work
                         </h2>
                         <p className="text-lg text-gray-600 leading-[32.5px] tracking-[0]">
                             Choose the service model that fits your timeline and strategic needs
                         </p>
-                    </div>
+                    </motion.div>
 
                     {/* Service Cards */}
-                    <div className="max-w-8xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                    <motion.div
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, margin: "-50px" }}
+                        variants={containerVariants}
+                        className="flex md:grid overflow-x-auto md:overflow-x-visible snap-x snap-mandatory md:snap-none pb-8 md:pb-0 scrollbar-hide grid-cols-1 md:grid-cols-3 gap-6 mb-12 -mx-4 px-4 md:mx-0 md:px-0">
                         {/* Card 1: Express Insights */}
-                        <div className="bg-white relative border-2 rounded-[12px] border-[#E5E7EB] rounded-xl p-8 hover:shadow-lg transition-all duration-300">
+                        <motion.div
+                            variants={itemVariants}
+                            className="min-w-[85vw] md:min-w-0 snap-center bg-white relative border-2 rounded-[12px] border-[#E5E7EB] p-8 hover:shadow-lg transition-all duration-300">
                             <div className="w-16 h-16 bg-primary/20 rounded-[12px] flex items-center justify-center mb-6">
                                 <Zap className="w-8 h-8 text-primary" />
                             </div>
@@ -66,15 +100,17 @@ const HowWeWorkSection = () => {
                                     Get Started <ArrowRight className="ml-2 w-4 h-4" />
                                 </button>
                             </div>
-                        </div>
+                        </motion.div>
 
                         {/* Card 2: Deep Dive Reports (Most Popular - Highlighted) */}
-                        <div className="bg-white border-2 overflow-hidden rounded-[12px] border-primary rounded-xl p-8 scale-105 transition-all duration-300 relative pt-12">
+                        <motion.div
+                            variants={itemVariants}
+                            className="min-w-[85vw] md:min-w-0 snap-center bg-white border-2 overflow-hidden rounded-[12px] border-primary p-8 md:scale-105 transition-all duration-300 relative pt-12">
                             {/* Most Popular Badge */}
-                            <div className="absolute w-full top-0 top-0 end-0 z-10">
-                                <div className="bg-primary w-full text-center text-white px-6 py-2 text-md font-medium">
+                            <div className="absolute w-full top-0 end-0 z-10">
+                                <p className="bg-primary w-full text-center text-white lg:px-6 py-2 text-xs lg:text-md font-medium">
                                     Most Popular for Strategic Planning
-                                </div>
+                                </p>
                             </div>
                             <div className="w-16 h-16 bg-primary/20 rounded-[12px] flex items-center justify-center mb-6">
                                 <BookOpen className="w-8 h-8 text-primary" />
@@ -124,10 +160,12 @@ const HowWeWorkSection = () => {
                                     Get Started <ArrowRight className="ml-2 w-4 h-4" />
                                 </button>
                             </div>
-                        </div>
+                        </motion.div>
 
                         {/* Card 3: Consultation Bundles */}
-                        <div className="bg-white h-[800px] relative border-2 rounded-[12px] border-[#E5E7EB] rounded-xl p-8 hover:shadow-lg transition-all duration-300">
+                        <motion.div
+                            variants={itemVariants}
+                            className="min-w-[85vw] md:min-w-0 snap-center bg-white relative border-2 rounded-[12px] border-[#E5E7EB] p-8 hover:shadow-lg transition-all duration-300">
                             <div className="w-16 h-16 bg-primary/20 rounded-[12px] flex items-center justify-center mb-6">
                                 <Users className="w-8 h-8 text-primary" />
                             </div>
@@ -176,11 +214,15 @@ const HowWeWorkSection = () => {
                                     Get Started <ArrowRight className="ml-2 w-4 h-4" />
                                 </button>
                             </div>
-                        </div>
-                    </div>
+                        </motion.div>
+                    </motion.div>
 
                     {/* Not Sure Section */}
-                    <div
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5 }}
                         style={{
                             background: "linear-gradient(90deg, rgba(76, 184, 171, 0.1) 0%, rgba(242, 135, 58, 0.1) 100%)",
                             border: "1px solid rgba(76, 184, 171, 0.2)",
@@ -191,7 +233,7 @@ const HowWeWorkSection = () => {
                         <button className="px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors inline-flex items-center">
                             Talk to an Analyst <ArrowRight className="ml-2 w-4 h-4" />
                         </button>
-                    </div>
+                    </motion.div>
                 </div>
             </section>
             {/* Why Healthcare Leaders Trust Us Section */}
@@ -202,15 +244,24 @@ const HowWeWorkSection = () => {
                 }}>
                 <div
                     className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-                    <div className="max-w-4xl mx-auto text-center mb-12">
+                    <motion.div
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        variants={itemVariants}
+                        className="max-w-4xl mx-auto text-center mb-12">
                         <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
                             Why Healthcare Leaders Trust Us
                         </h2>
                         <p className="text-lg text-gray-600 leading-[32.5px] tracking-[0]">
                             Built by experts who understand your market
                         </p>
-                    </div>
-                    <div
+                    </motion.div>
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8 }}
                         style={{
                             background: "linear-gradient(90deg, #283F3B 0%, rgba(40, 63, 59, 0.95) 100%)",
                             borderRadius: "16px",
@@ -220,27 +271,38 @@ const HowWeWorkSection = () => {
                             <h2 className="text-4xl md:text-5xl font-bold text-white mb-12">
                                 Meet Our Expert Team
                             </h2>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-8xl">
+                            <motion.div
+                                initial="hidden"
+                                whileInView="visible"
+                                viewport={{ once: true }}
+                                variants={containerVariants}
+                                className="flex md:grid overflow-x-auto md:overflow-x-visible snap-x snap-mandatory md:snap-none pb-8 md:pb-0 scrollbar-hide grid-cols-1 md:grid-cols-3 gap-6 max-w-8xl -mx-4 px-4 md:mx-0 md:px-0">
                                 {/* Team Member 1 */}
-                                <div className="border rounded-[16px] border-gray-500 rounded-xl p-6 hover:bg-gray-750 transition-colors">
+                                <motion.div
+                                    variants={itemVariants}
+                                    className="min-w-[85vw] md:min-w-0 snap-center border rounded-[16px] border-gray-500 p-6 hover:bg-gray-750 transition-colors">
                                     <h3 className="text-xl font-bold text-white mb-2">Senior Research Director</h3>
                                     <p className="text-gray-300">15+ years in pharma product management and market strategy</p>
-                                </div>
+                                </motion.div>
 
                                 {/* Team Member 2 */}
-                                <div className="border rounded-[16px] border-gray-500 rounded-xl p-6 hover:bg-gray-750 transition-colors">
+                                <motion.div
+                                    variants={itemVariants}
+                                    className="min-w-[85vw] md:min-w-0 snap-center border rounded-[16px] border-gray-500 p-6 hover:bg-gray-750 transition-colors">
                                     <h3 className="text-xl font-bold text-white mb-2">Healthcare Market Analyst</h3>
                                     <p className="text-gray-300">Former hospital procurement leader with deep payer network access</p>
-                                </div>
+                                </motion.div>
 
                                 {/* Team Member 3 */}
-                                <div className="border rounded-[16px] border-gray-500 rounded-xl p-6 hover:bg-gray-750 transition-colors">
+                                <motion.div
+                                    variants={itemVariants}
+                                    className="min-w-[85vw] md:min-w-0 snap-center border rounded-[16px] border-gray-500 p-6 hover:bg-gray-750 transition-colors">
                                     <h3 className="text-xl font-bold text-white mb-2">Regulatory Affairs Lead</h3>
                                     <p className="text-gray-300">FDA and EMA experience spanning 12 years in healthcare consulting</p>
-                                </div>
-                            </div>
+                                </motion.div>
+                            </motion.div>
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
             </section>
         </>

@@ -71,7 +71,7 @@ const Navbar = () => {
 
           {/* CTA Buttons - Desktop */}
           <div className="hidden md:flex items-center space-x-3">
-            <button className="px-4 py-2 border-2 border-primary text-primary rounded-lg font-medium hover:bg-green-50 transition-colors">
+            <button className="hidden lg:block px-4 py-2 border-2 border-primary text-primary rounded-lg font-medium hover:bg-green-50 transition-colors">
               Get Free Sample
             </button>
             <button className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-teal-700 transition-colors">

@@ -12,9 +12,11 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 172 43% 51%; /* #4CB8AB */
+    --primary: 172 43% 51%;
+    /* #4CB8AB */
     --primary-foreground: 0 0% 100%;
-    --secondary: 172 20% 94%; /* #e9f4f3 */
+    --secondary: 172 20% 94%;
+    /* #e9f4f3 */
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
@@ -35,9 +37,11 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 172 43% 51%; /* #4CB8AB */
+    --primary: 172 43% 51%;
+    /* #4CB8AB */
     --primary-foreground: 0 0% 100%;
-    --secondary: 172 20% 94%; /* #e9f4f3 */
+    --secondary: 172 20% 94%;
+    /* #e9f4f3 */
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
@@ -55,6 +59,11 @@
   * {
     @apply border-border;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
@@ -63,3 +72,13 @@
   }
 }
 
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
