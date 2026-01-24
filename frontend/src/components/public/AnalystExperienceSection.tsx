@@ -6,7 +6,7 @@ const AnalystExperienceSection = () => {
       {/* The Analyst-First Experience Section */}
       <section id="about" className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
         <div className="max-w-4xl mx-auto text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
             The Analyst-First Experience
           </h2>
           <p className="text-lg text-[#4B5563] leading-[32.5px] tracking-[0]">
@@ -114,7 +114,7 @@ const AnalystExperienceSection = () => {
           }}
           className="container px-4 py-8 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
               How We're Different
             </h2>
           </div>

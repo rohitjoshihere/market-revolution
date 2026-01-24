@@ -243,14 +243,14 @@ const HowWeWorkSection = () => {
                     background: "linear-gradient(180deg, #FFFFFF 0%, #F3F2F1 100%)",
                 }}>
                 <div
-                    className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+                    className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-2 lg:pb-24">
                     <motion.div
                         initial="hidden"
                         whileInView="visible"
                         viewport={{ once: true }}
                         variants={itemVariants}
                         className="max-w-4xl mx-auto text-center mb-12">
-                        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                             Why Healthcare Leaders Trust Us
                         </h2>
                         <p className="text-lg text-gray-600 leading-[32.5px] tracking-[0]">
@@ -266,9 +266,9 @@ const HowWeWorkSection = () => {
                             background: "linear-gradient(90deg, #283F3B 0%, rgba(40, 63, 59, 0.95) 100%)",
                             borderRadius: "16px",
                         }}
-                        className="py-16 lg:py-20">
+                        className="py-16 lg:py-\0">
                         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                            <h2 className="text-4xl md:text-5xl font-bold text-white mb-12">
+                            <h2 className="text-3xl md:text-4xl font-bold text-white mb-12">
                                 Meet Our Expert Team
                             </h2>
                             <motion.div

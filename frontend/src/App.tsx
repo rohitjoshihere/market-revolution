@@ -7,6 +7,7 @@ import AboutPage from '@/pages/public/AboutPage';
 import ContactPage from '@/pages/public/ContactPage';
 import ServicesPage from '@/pages/public/ServicesPage';
 import ReportsPage from '@/pages/public/ReportsPage';
+import ReportDetailPage from '@/pages/public/ReportDetailPage';
 
 // Admin routes
 import AdminDashboard from '@/pages/admin/AdminDashboard';
@@ -24,6 +25,7 @@ function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/reports" element={<ReportsPage />} />
+        <Route path="/reports/:id" element={<ReportDetailPage />} />
 
         {/* Admin routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
