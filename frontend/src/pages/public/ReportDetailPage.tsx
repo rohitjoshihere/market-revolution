@@ -7,14 +7,11 @@ import {
     TrendingUp,
     ChevronRight,
     Download,
-    Share2,
     ShieldCheck,
     Globe,
     BarChart3,
     Clock,
-    Layers,
     ArrowRight,
-    Search,
     BookOpen,
     Layout
 } from 'lucide-react';
@@ -102,26 +99,6 @@ const ReportDetailPage = () => {
 
     return (
         <PageLayout>
-            {/* Top Search Bar / Breadcrumb Area */}
-            <div className="bg-white border-b border-[#F3F2F1] sticky top-0 z-40">
-                <div className="container mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div className="relative w-full max-w-md group">
-                        <input
-                            type="text"
-                            placeholder="Search reports..."
-                            className="w-full pl-10 pr-4 py-2 bg-[#F3F2F1]/50 border border-transparent rounded-lg focus:bg-white focus:border-primary focus:outline-none transition-all"
-                        />
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-primary" />
-                    </div>
-                    <div className="flex items-center space-x-6 text-sm font-medium text-gray-600">
-                        <Link to="/reports" className="hover:text-primary transition-colors">Reports</Link>
-                        <Link to="/services" className="hover:text-primary transition-colors">Services</Link>
-                        <Link to="/about" className="hover:text-primary transition-colors">About Us</Link>
-                        <Link to="/insights" className="hover:text-primary transition-colors">Insights</Link>
-                    </div>
-                </div>
-            </div>
-
             <div className="bg-[#F9FAFB] min-h-screen">
                 <div className="container mx-auto px-4 py-8">
                     {/* Header Section */}
@@ -155,8 +132,8 @@ const ReportDetailPage = () => {
                                             key={tab.id}
                                             onClick={() => setActiveTab(tab.id)}
                                             className={`pb-4 text-sm font-bold uppercase tracking-wider transition-all whitespace-nowrap relative ${activeTab === tab.id
-                                                    ? 'text-primary'
-                                                    : 'text-gray-400 hover:text-[#283F3B]'
+                                                ? 'text-primary'
+                                                : 'text-gray-400 hover:text-[#283F3B]'
                                                 }`}
                                         >
                                             {tab.label}
