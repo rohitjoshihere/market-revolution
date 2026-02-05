@@ -12,28 +12,38 @@ import ReportDetailPage from '@/pages/public/ReportDetailPage';
 // Admin routes
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminLogin from '@/pages/admin/AdminLogin';
+import { AuthProvider } from '@/context/AuthContext';
+import ProtectedRoute from '@/components/admin/ProtectedRoute';
 
 import SmoothScroll from '@/components/public/SmoothScroll';
 
 function App() {
   return (
-    <SmoothScroll>
-      <Routes>
-        {/* Public routes */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/services" element={<ServicesPage />} />
-        <Route path="/reports" element={<ReportsPage />} />
-        <Route path="/reports/:id" element={<ReportDetailPage />} />
+    <AuthProvider>
+      <SmoothScroll>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/reports/:id" element={<ReportDetailPage />} />
 
-        {/* Admin routes */}
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/*" element={<AdminDashboard />} />
-      </Routes>
-      <Toaster />
-    </SmoothScroll>
+          {/* Admin routes */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route
+            path="/admin/*"
+            element={
+              <ProtectedRoute requireAdmin>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+        <Toaster />
+      </SmoothScroll>
+    </AuthProvider>
   );
 }
 

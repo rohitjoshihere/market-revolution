@@ -48,3 +48,16 @@ export const authenticateToken = (
   }
 };
 
+export const requireAdmin = (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.user || req.user.role !== 'ADMIN') {
+    return res.status(403).json({
+      success: false,
+      error: { message: 'Admin access required' },
+    });
+  }
+  next();
+};

@@ -95,7 +95,7 @@ const HowWeWorkSection = () => {
                                     <span className="text-gray-700 text-sm">Executive summary report</span>
                                 </li>
                             </ul>
-                            <div className='flex w-full justify-center absolute bottom-8 end-0'>
+                            <div className='flex w-full justify-center absolute bottom-3 end-0'>
                                 <button className="w-[90%] px-6 py-3 bg-[#FFF1EB] text-gray-900 rounded-lg font-medium hover:bg-orange-200 transition-colors flex items-center justify-center">
                                     Get Started <ArrowRight className="ml-2 w-4 h-4" />
                                 </button>
@@ -209,7 +209,7 @@ const HowWeWorkSection = () => {
                                     <span className="text-gray-700 text-sm">Annual market outlook briefing</span>
                                 </li>
                             </ul>
-                            <div className='flex w-full justify-center absolute bottom-8 end-0'>
+                            <div className='flex w-full justify-center absolute bottom-3 end-0'>
                                 <button className="w-[90%] px-6 py-3 bg-[#FFF1EB] text-gray-900 rounded-lg font-medium hover:bg-orange-200 transition-colors flex items-center justify-center">
                                     Get Started <ArrowRight className="ml-2 w-4 h-4" />
                                 </button>

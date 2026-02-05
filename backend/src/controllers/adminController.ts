@@ -5,11 +5,13 @@ import { prisma } from '../lib/prisma';
 export const getDashboardStats = async (req: AuthRequest, res: Response) => {
   try {
     // Get statistics
-    const [totalUsers, totalAdmins] = await Promise.all([
+    const [totalUsers, totalAdmins, totalReports, totalInquiries] = await Promise.all([
       prisma.user.count(),
       prisma.user.count({
         where: { role: 'ADMIN' },
       }),
+      prisma.report.count(),
+      prisma.inquiry.count()
     ]);
 
     res.json({
@@ -19,6 +21,8 @@ export const getDashboardStats = async (req: AuthRequest, res: Response) => {
           totalUsers,
           totalAdmins,
           totalRegularUsers: totalUsers - totalAdmins,
+          totalReports,
+          totalInquiries
         },
       },
     });

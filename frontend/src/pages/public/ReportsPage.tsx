@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import {
   Calendar,
@@ -7,11 +7,13 @@ import {
   ArrowRight,
   Filter,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Loader2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import NewsletterSection from '@/components/public/NewsletterSection';
-import { allReports } from '@/data/reports';
+import { getReports } from '@/data/reportService';
+import { Report } from '@/data/reports';
 
 declare global {
   interface Window {
@@ -23,27 +25,41 @@ const ReportsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const reportsPerPage = 3;
+  const [allReportsList, setAllReportsList] = useState<Report[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const reportsPerPage = 6;
 
-  const categories = [
-    { name: 'Energy & Power', count: 6 },
-    { name: 'Healthcare', count: 7 },
-    { name: 'Technology', count: 8 },
-    { name: 'Advanced Materials', count: 6 },
-    { name: 'Bulk Chemicals', count: 9 },
-    { name: 'Specialty & Chemicals', count: 5 },
-    { name: 'Semiconductors & Electronics', count: 5 },
-    { name: 'Consumer Goods', count: 9 },
-  ];
+  useEffect(() => {
+    const fetchReports = async () => {
+      setIsLoading(true);
+      try {
+        const data = await getReports();
+        setAllReportsList(data);
+      } catch (error) {
+        console.error('Failed to fetch reports:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchReports();
+  }, []);
+
+  const dynamicCategories = useMemo(() => {
+    const counts: Record<string, number> = {};
+    allReportsList.forEach(report => {
+      counts[report.category] = (counts[report.category] || 0) + 1;
+    });
+    return Object.entries(counts).map(([name, count]) => ({ name, count }));
+  }, [allReportsList]);
 
   const filteredReports = useMemo(() => {
-    return allReports.filter(report => {
+    return allReportsList.filter(report => {
       const matchesSearch = report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         report.description.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = selectedCategory ? report.category === selectedCategory : true;
       return matchesSearch && matchesCategory;
     });
-  }, [searchQuery, selectedCategory]);
+  }, [allReportsList, searchQuery, selectedCategory]);
 
   const totalPages = Math.ceil(filteredReports.length / reportsPerPage);
   const currentReports = filteredReports.slice((currentPage - 1) * reportsPerPage, currentPage * reportsPerPage);
@@ -102,198 +118,178 @@ const ReportsPage = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12 lg:py-20">
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
-
-          {/* Sidebar - Reports by Industry */}
-          <aside className="w-full lg:w-1/4">
-            <div className="sticky top-24">
-              <div className="bg-white rounded-2xl border border-[#F3F2F1] shadow-sm overflow-hidden">
-                <div className="bg-[#F3F2F1]/50 px-6 py-4 border-b border-[#F3F2F1] flex items-center justify-between">
-                  <h2 className="text-lg font-bold text-[#283F3B] flex items-center">
-                    <Filter className="w-5 h-5 mr-2 text-primary" />
-                    Industries
-                  </h2>
-                  {selectedCategory && (
-                    <button
-                      onClick={() => { setSelectedCategory(null); setCurrentPage(1); }}
-                      className="text-xs text-primary font-bold hover:underline"
-                    >
-                      Clear
-                    </button>
-                  )}
+      <div className="bg-[#F9FAFB] min-h-screen py-10 sm:py-16 lg:py-24">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+            {/* Sidebar Filters */}
+            <aside className="lg:col-span-1 space-y-10">
+              {/* Search Widget */}
+              <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                <h3 className="text-lg font-bold text-[#283F3B] mb-6 flex items-center">
+                  <Search className="w-5 h-5 mr-3 text-primary" />
+                  Search Reports
+                </h3>
+                <div className="relative group">
+                  <input
+                    type="text"
+                    placeholder="Keywords..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-medium"
+                  />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-primary transition-colors" />
                 </div>
-                <div className="divide-y divide-[#F3F2F1]">
-                  {categories.map((cat, idx) => (
+              </div>
+
+              {/* Categories Sidebar */}
+              <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="text-lg font-bold text-[#283F3B]">Categories</h3>
+                  <Filter className="w-4 h-4 text-gray-400" />
+                </div>
+                <div className="space-y-2">
+                  <button
+                    onClick={() => setSelectedCategory(null)}
+                    className={`w-full flex items-center justify-between px-5 py-3.5 rounded-2xl text-sm font-bold transition-all ${!selectedCategory ? 'bg-primary text-white shadow-lg shadow-primary/20 translate-x-2' : 'text-gray-500 hover:bg-gray-50 hover:text-[#283F3B]'}`}
+                  >
+                    <span>All Industries</span>
+                  </button>
+                  {dynamicCategories.map((cat) => (
                     <button
-                      key={idx}
-                      onClick={() => {
-                        setSelectedCategory(selectedCategory === cat.name ? null : cat.name);
-                        setCurrentPage(1);
-                      }}
-                      className={`w-full flex items-center justify-between px-6 py-4 transition-colors group ${selectedCategory === cat.name ? 'bg-primary/5' : 'hover:bg-[#F3F2F1]/30'}`}
+                      key={cat.name}
+                      onClick={() => setSelectedCategory(cat.name)}
+                      className={`w-full flex items-center justify-between px-5 py-3.5 rounded-2xl text-sm font-bold transition-all ${selectedCategory === cat.name ? 'bg-primary text-white shadow-lg shadow-primary/20 translate-x-2' : 'text-gray-500 hover:bg-gray-50 hover:text-[#283F3B]'}`}
                     >
-                      <div className={`flex items-center transition-colors ${selectedCategory === cat.name ? 'text-primary' : 'text-gray-600 group-hover:text-[#283F3B]'}`}>
-                        <Plus className={`w-4 h-4 mr-3 transition-colors ${selectedCategory === cat.name ? 'text-primary scale-125' : 'text-primary/60 group-hover:text-primary'}`} />
-                        <span className="font-medium">{cat.name}</span>
-                      </div>
-                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full transition-all ${selectedCategory === cat.name ? 'bg-primary text-white' : 'text-gray-400 bg-[#F3F2F1] group-hover:bg-primary/10 group-hover:text-primary'}`}>
+                      <span className="text-left leading-tight">{cat.name}</span>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full ${selectedCategory === cat.name ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400 font-bold'}`}>
                         {cat.count}
                       </span>
                     </button>
                   ))}
                 </div>
               </div>
+            </aside>
 
-              {/* Search Widget */}
-              <div className="mt-8 relative group">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                  placeholder="Search reports..."
-                  className="w-full px-6 py-4 bg-white border border-[#F3F2F1] rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all pr-12"
-                />
-                <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
-              </div>
-
-              <div className="mt-8 p-6 bg-[#283F3B] rounded-3xl text-white relative overflow-hidden group">
-                <div className="relative z-10">
-                  <h3 className="font-bold text-lg mb-2">Need a custom report?</h3>
-                  <p className="text-white/70 text-sm mb-4">Our analysts can tailor research to your specific business needs.</p>
-                  <Link to="/contact" className="inline-flex items-center text-primary-light font-bold hover:underline">
-                    Request Customization
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Link>
+            {/* Reports Listing */}
+            <main className="lg:col-span-3 space-y-10">
+              {isLoading ? (
+                <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl shadow-sm border border-gray-100">
+                  <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
+                  <p className="text-gray-500 font-medium">Loading premium market reports...</p>
                 </div>
-                <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-primary opacity-20 rounded-full filter blur-[20px] group-hover:scale-150 transition-transform duration-500"></div>
-              </div>
-            </div>
-          </aside>
+              ) : filteredReports.length === 0 ? (
+                <div className="text-center py-20 bg-white rounded-3xl shadow-sm border border-gray-100">
+                  <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Search className="w-10 h-10 text-gray-300" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-[#283F3B] mb-2">No Reports Found</h3>
+                  <p className="text-gray-500">Try adjusting your search or category filters.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">
+                      Showing <span className="text-[#283F3B]">{filteredReports.length}</span> Results
+                    </p>
+                  </div>
 
-          {/* Main Content - Reports & Publication */}
-          <main className="w-full lg:w-3/4">
-            <div className="flex items-center justify-between mb-8 border-b border-[#F3F2F1] pb-6">
-              <h2 className="text-2xl sm:text-3xl font-bold text-[#283F3B]">
-                {selectedCategory ? `${selectedCategory} Reports` : 'Reports & Publication'}
-                <span className="text-sm font-normal text-gray-400 ml-3">({filteredReports.length} total)</span>
-              </h2>
-              <div className="flex items-center space-x-2 text-sm text-gray-500">
-                <span>Sort by:</span>
-                <select className="bg-transparent font-medium text-[#283F3B] focus:outline-none">
-                  <option>Latest</option>
-                  <option>Popular</option>
-                </select>
-              </div>
-            </div>
-
-            {currentReports.length > 0 ? (
-              <div className="space-y-12">
-                {currentReports.map((report, idx) => (
-                  <article key={report.id} className="group relative">
-                    <div className="flex flex-col space-y-4">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-xs font-bold text-primary uppercase tracking-widest bg-primary/10 px-2 py-0.5 rounded">
-                          {report.category}
-                        </span>
-                      </div>
-
-                      <Link to={`/reports/${report.id}`}>
-                        <h3 className="text-xl sm:text-2xl font-bold text-[#283F3B] hover:text-primary transition-colors leading-tight">
-                          {report.title}
-                        </h3>
-                      </Link>
-
-                      <p className="text-gray-600 leading-relaxed text-base">
-                        {report.description}
-                        <Link to={`/reports/${report.id}`} className="text-primary font-bold hover:underline ml-1 inline-flex items-center">
-                          Read More »
-                        </Link>
-                      </p>
-
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pt-4">
-                        <div className="flex items-center space-x-6 text-sm text-gray-400">
-                          <div className="flex items-center">
-                            <Calendar className="w-4 h-4 mr-2" />
-                            {report.date}
-                          </div>
-                          <div className="flex items-center">
-                            <Plus className="w-4 h-4 mr-2" />
-                            Single User License
+                  <div className="grid grid-cols-1 gap-8">
+                    {currentReports.map((report) => (
+                      <div key={report.id} className="bg-white rounded-[2rem] p-8 sm:p-10 shadow-sm border border-[#F3F2F1] hover:shadow-2xl hover:border-primary/10 transition-all duration-500 group relative flex flex-col md:flex-row gap-10">
+                        {/* Report Icon/Cover Placeholder */}
+                        <div className="w-full md:w-32 h-44 bg-[#283F3B] rounded-2xl flex-shrink-0 flex items-center justify-center p-6 text-center shadow-lg transform group-hover:-rotate-3 transition-transform">
+                          <div className="space-y-2">
+                            <Plus className="w-8 h-8 text-primary mx-auto" />
+                            <span className="text-[10px] font-bold text-white/50 uppercase tracking-tighter block">Market Insights</span>
                           </div>
                         </div>
 
-                        <div className="flex items-center space-x-4">
-                          <button
-                            onClick={() => handlePayment(report.title)}
-                            className="px-6 py-2.5 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all shadow-md hover:shadow-lg active:scale-95"
-                          >
-                            Buy Now
-                          </button>
+                        {/* Content Area */}
+                        <div className="flex-1 space-y-6">
+                          <div className="flex flex-wrap items-center gap-3">
+                            <span className="px-4 py-1.5 bg-primary/10 text-primary text-[10px] font-extrabold uppercase tracking-widest rounded-full">
+                              {report.category}
+                            </span>
+                            <span className="flex items-center text-gray-400 text-xs font-bold uppercase tracking-widest">
+                              <Calendar className="w-4 h-4 mr-2" />
+                              {report.date}
+                            </span>
+                          </div>
+
                           <Link
                             to={`/reports/${report.id}`}
-                            className="px-6 py-2.5 border-2 border-[#283F3B]/10 text-[#283F3B] rounded-xl font-bold hover:bg-[#F3F2F1] transition-all"
+                            className="block group-hover:text-primary transition-colors"
                           >
-                            Know More
+                            <h2 className="text-2xl font-extrabold text-[#283F3B] leading-tight mb-4">
+                              {report.title}
+                            </h2>
                           </Link>
+
+                          <p className="text-gray-500 text-sm leading-relaxed line-clamp-3 font-medium">
+                            {report.description}
+                          </p>
+
+                          <div className="flex flex-wrap items-center justify-between gap-6 pt-6 border-t border-gray-50">
+                            <div className="flex items-baseline space-x-2">
+                              <span className="text-xs font-bold text-gray-400 uppercase">Single Lite User:</span>
+                              <span className="text-2xl font-black text-primary">{report.priceLabel}</span>
+                            </div>
+                            <div className="flex items-center space-x-4">
+                              <Link
+                                to={`/reports/${report.id}`}
+                                className="px-6 py-3 text-sm font-bold text-[#283F3B] hover:text-primary transition-colors flex items-center group/btn"
+                              >
+                                View Details
+                                <ArrowRight className="w-4 h-4 ml-2 transform group-hover/btn:translate-x-1 transition-transform" />
+                              </Link>
+                              <button
+                                onClick={() => handlePayment(report.title)}
+                                className="px-8 py-3 bg-[#283F3B] text-white rounded-xl text-sm font-bold shadow-lg shadow-[#283F3B]/10 hover:bg-primary transition-all active:scale-95"
+                              >
+                                Buy Now
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </div>
+                    ))}
+                  </div>
+
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-center space-x-3 pt-12">
+                      <button
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                        className="p-4 bg-white border border-gray-100 rounded-2xl text-gray-400 hover:text-primary disabled:opacity-30 transition-all font-bold"
+                      >
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      {[...Array(totalPages)].map((_, i) => (
+                        <button
+                          key={i + 1}
+                          onClick={() => setCurrentPage(i + 1)}
+                          className={`w-14 h-14 rounded-2xl text-sm font-bold transition-all ${currentPage === i + 1 ? 'bg-primary text-white shadow-xl shadow-primary/30 scale-110' : 'bg-white text-gray-500 border border-gray-100 hover:border-primary/30'}`}
+                        >
+                          {i + 1}
+                        </button>
+                      ))}
+                      <button
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                        className="p-4 bg-white border border-gray-100 rounded-2xl text-gray-400 hover:text-primary disabled:opacity-30 transition-all font-bold"
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
                     </div>
-                    {idx !== currentReports.length - 1 && (
-                      <div className="mt-12 border-b border-dashed border-gray-200"></div>
-                    )}
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <div className="py-20 text-center">
-                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#F3F2F1] mb-6">
-                  <Search className="w-10 h-10 text-gray-400" />
-                </div>
-                <h3 className="text-2xl font-bold text-[#283F3B] mb-2">No reports found</h3>
-                <p className="text-gray-500">Try adjusting your search or category filters.</p>
-                <button
-                  onClick={() => { setSearchQuery(''); setSelectedCategory(null); }}
-                  className="mt-6 text-primary font-bold hover:underline"
-                >
-                  Clear all filters
-                </button>
-              </div>
-            )}
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="mt-16 flex items-center justify-center space-x-2">
-                <button
-                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                  disabled={currentPage === 1}
-                  className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-[#F3F2F1] text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed border border-[#F3F2F1] transition-colors"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-
-                {[...Array(totalPages)].map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentPage(i + 1)}
-                    className={`w-10 h-10 rounded-full font-bold transition-all ${currentPage === i + 1 ? 'bg-[#283F3B] text-white shadow-lg' : 'hover:bg-[#F3F2F1] text-gray-600 border border-[#F3F2F1]'}`}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-
-                <button
-                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                  disabled={currentPage === totalPages}
-                  className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-[#F3F2F1] text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed border border-[#F3F2F1] transition-colors"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </div>
-            )}
-          </main>
+                  )}
+                </>
+              )}
+            </main>
+          </div>
         </div>
       </div>
+
       <NewsletterSection />
     </PageLayout>
   );

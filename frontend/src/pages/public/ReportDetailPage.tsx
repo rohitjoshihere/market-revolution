@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import PageLayout from '@/components/layout/PageLayout';
 import {
@@ -13,68 +13,80 @@ import {
     Clock,
     ArrowRight,
     BookOpen,
-    Layout
+    Layout,
+    Loader2
 } from 'lucide-react';
 import NewsletterSection from '@/components/public/NewsletterSection';
-import { allReports } from '@/data/reports';
-
-declare global {
-    interface Window {
-        Razorpay: any;
-    }
-}
+import InquiryModal from '@/components/public/InquiryModal';
+import { getReports, getReportById } from '@/data/reportService';
+import { Report } from '@/data/reports';
 
 const ReportDetailPage = () => {
     const { id } = useParams();
-    const [activeTab, setActiveTab] = useState('summary');
+    const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
+    const [reportData, setReportData] = useState<Report | null>(null);
+    const [allReportsList, setAllReportsList] = useState<Report[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const reportData = allReports.find(r => r.id === id);
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            try {
+                if (id) {
+                    const data = await getReportById(id);
+                    setReportData(data);
 
-    const loadRazorpay = () => {
-        return new Promise((resolve) => {
-            const script = document.createElement('script');
-            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-            script.onload = () => resolve(true);
-            script.onerror = () => resolve(false);
-            document.body.appendChild(script);
-        });
-    };
-
-    const handlePayment = async () => {
-        if (!reportData) return;
-        const res = await loadRazorpay();
-
-        if (!res) {
-            alert("Razorpay SDK failed to load. Are you online?");
-            return;
-        }
-
-        const options = {
-            key: "rzp_test_YOUR_KEY_HERE",
-            amount: (reportData.priceAmount * 100).toString(),
-            currency: "USD",
-            name: "Market Revolution",
-            description: reportData.title,
-            image: "https://example.com/your_logo",
-            handler: function (response: any) {
-                alert(`Payment Successful! Payment ID: ${response.razorpay_payment_id}`);
-            },
-            prefill: {
-                name: "John Doe",
-                email: "john@example.com",
-                contact: "9999999999",
-            },
-            notes: {
-                address: "Market Revolution HQ",
-            },
-            theme: {
-                color: "#283F3B",
-            },
+                    // Also fetch all for "Related Research"
+                    const allData = await getReports();
+                    setAllReportsList(allData);
+                }
+            } catch (error) {
+                console.error('Failed to fetch report detail:', error);
+            } finally {
+                setIsLoading(false);
+            }
         };
+        fetchData();
+    }, [id]);
 
-        const paymentObject = new window.Razorpay(options);
-        paymentObject.open();
+    const sections = [
+        { id: 'summary', label: 'Report Summary' },
+        { id: 'toc', label: 'Table of Contents' },
+        { id: 'segmentation', label: 'Segmentation' },
+        { id: 'methodology', label: 'Methodology' },
+    ];
+
+    const scrollToSection = (id: string) => {
+        const element = document.getElementById(id);
+        if (element) {
+            const offset = 100;
+            const bodyRect = document.body.getBoundingClientRect().top;
+            const elementRect = element.getBoundingClientRect().top;
+            const elementPosition = elementRect - bodyRect;
+            const offsetPosition = elementPosition - offset;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+        }
     };
+
+    const renderRichText = (html?: string | null) => {
+        if (!html) return null;
+        return <div className="prose prose-indigo max-w-none" dangerouslySetInnerHTML={{ __html: html }} />;
+    };
+
+    if (isLoading) {
+        return (
+            <PageLayout>
+                <div className="flex flex-col items-center justify-center py-40">
+                    <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
+                    <p className="text-gray-500 font-medium tracking-wide">Analysing market data...</p>
+                </div>
+            </PageLayout>
+        );
+    }
 
     if (!reportData) {
         return (
@@ -90,60 +102,36 @@ const ReportDetailPage = () => {
         );
     }
 
-    const tabs = [
-        { id: 'summary', label: 'Report Summary' },
-        { id: 'toc', label: 'Table of Contents' },
-        { id: 'segmentation', label: 'Segmentation' },
-        { id: 'methodology', label: 'Methodology' },
-    ];
-
     return (
         <PageLayout>
             <div className="bg-[#F9FAFB] min-h-screen">
                 <div className="container mx-auto px-4 py-8">
                     {/* Header Section */}
                     <div className="flex flex-col lg:flex-row gap-8 items-start mb-12">
-                        {/* Report Cover */}
-                        <div className="relative w-full max-w-[200px] aspect-[3/4] bg-[#283F3B] rounded-lg shadow-2xl overflow-hidden flex-shrink-0 group">
-                            <div className="absolute top-0 left-0 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-br-md z-10">PDF</div>
-                            <div className="p-4 flex flex-col h-full justify-center items-center text-center text-white/90">
-                                <BookOpen className="w-12 h-12 mb-4 text-primary-light" />
-                                <div className="text-xs font-bold leading-tight uppercase tracking-tighter opacity-80">
-                                    Market Analysis Report
-                                </div>
-                            </div>
-                            <div className="absolute inset-x-0 bottom-0 h-1 bg-primary/40 group-hover:h-full transition-all duration-500"></div>
-                        </div>
-
-                        {/* Title & Info */}
                         <div className="flex-1">
                             <h1 className="text-3xl sm:text-4xl font-extrabold text-[#283F3B] mb-4 leading-tight">
                                 {reportData.title}
                             </h1>
                             <p className="text-lg text-gray-500 leading-relaxed mb-6 max-w-4xl font-medium">
-                                Size, Share & Trends Analysis Report By Component (Software, Hardware, Services), By Diagnosis Type (Cardiology, Oncology, Pathology, Radiology, Chest And Lung, Neurology), By Region, And Segment Forecasts
+                                {reportData.description}
                             </p>
 
-                            {/* Tabs & Desktop Actions */}
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b border-gray-200 mt-8">
-                                <div className="flex space-x-1 sm:space-x-8 overflow-x-auto no-scrollbar">
-                                    {tabs.map((tab) => (
-                                        <button
-                                            key={tab.id}
-                                            onClick={() => setActiveTab(tab.id)}
-                                            className={`pb-4 text-sm font-bold uppercase tracking-wider transition-all whitespace-nowrap relative ${activeTab === tab.id
-                                                ? 'text-primary'
-                                                : 'text-gray-400 hover:text-[#283F3B]'
-                                                }`}
-                                        >
-                                            {tab.label}
-                                            {activeTab === tab.id && (
-                                                <div className="absolute bottom-0 left-0 right-0 h-1 bg-primary rounded-t-full shadow-[0_0_10px_rgba(40,184,171,0.5)]"></div>
-                                            )}
-                                        </button>
-                                    ))}
+                            {/* Header Actions */}
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mt-8">
+                                <div className="flex flex-wrap gap-4 text-gray-500 text-sm font-semibold">
+                                    <div className="flex items-center bg-white px-3 py-1 rounded-full border border-gray-200">
+                                        <Calendar className="w-4 h-4 mr-2 text-primary" />
+                                        <span>Published: {reportData.date}</span>
+                                    </div>
+                                    <div className="flex items-center bg-white px-3 py-1 rounded-full border border-gray-200">
+                                        <BookOpen className="w-4 h-4 mr-2 text-primary" />
+                                        <span>{reportData.pages || 150} Pages</span>
+                                    </div>
                                 </div>
-                                <button className="mb-4 sm:mb-0 px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-full font-bold shadow-lg shadow-orange-500/20 transform hover:scale-105 active:scale-95 transition-all flex items-center justify-center">
+                                <button
+                                    onClick={() => setIsInquiryModalOpen(true)}
+                                    className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-full font-bold shadow-lg shadow-orange-500/20 transform hover:scale-105 active:scale-95 transition-all flex items-center justify-center"
+                                >
                                     <Download className="w-5 h-5 mr-2" />
                                     Download FREE Sample
                                 </button>
@@ -151,138 +139,148 @@ const ReportDetailPage = () => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
-                        {/* Main Content Area */}
-                        <div className="lg:col-span-3">
-                            <div className="bg-white rounded-3xl p-8 sm:p-12 shadow-sm border border-[#F3F2F1]">
-                                {activeTab === 'summary' && (
-                                    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                        <h2 className="text-2xl font-bold text-[#283F3B]">
-                                            {reportData.category} Market Summary
-                                        </h2>
-                                        <p className="text-lg text-gray-600 leading-relaxed">
-                                            {reportData.fullDescription || reportData.description}
-                                        </p>
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                        {/* Vertical Tabs & Content Area */}
+                        <div className="lg:col-span-9 flex flex-col md:flex-row gap-8">
+                            {/* Vertical Navigation Sidebar */}
+                            <nav className="w-full md:w-64 flex-shrink-0 space-y-2 sticky top-24 h-fit">
+                                {sections.map((section) => (
+                                    <button
+                                        key={section.id}
+                                        onClick={() => scrollToSection(section.id)}
+                                        className="w-full flex items-center px-6 py-4 rounded-2xl font-bold transition-all duration-300 group bg-white text-gray-500 hover:bg-gray-50 hover:text-[#283F3B] border border-gray-100 hover:translate-x-2"
+                                    >
+                                        <ChevronRight className="w-4 h-4 mr-3 text-primary transition-transform group-hover:translate-x-1" />
+                                        <span className="text-sm tracking-tight">{section.label}</span>
+                                    </button>
+                                ))}
 
-                                        {/* Trends & Insights */}
-                                        <div className="space-y-6">
-                                            <h3 className="text-xl font-bold text-[#283F3B] flex items-center">
-                                                <TrendingUp className="w-6 h-6 mr-3 text-primary" />
-                                                Key Market Trends & Insights
-                                            </h3>
-                                            <ul className="space-y-4 ml-6">
-                                                {reportData.highlights?.map((highlight, idx) => (
-                                                    <li key={idx} className="flex items-start text-gray-700">
-                                                        <div className="mt-2 mr-4 w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
-                                                        <span className="leading-relaxed">{highlight}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
+                                <div className="mt-8 p-6 bg-white rounded-2xl border border-dashed border-gray-200 hidden md:block">
+                                    <p className="text-xs text-gray-400 font-medium leading-relaxed">
+                                        Need specific data points? Our analysts can help you with customized segmentation.
+                                    </p>
+                                </div>
+                            </nav>
 
-                                        {/* Market Size & Forecast (Visual placeholder) */}
-                                        <div className="p-8 bg-[#F9FAFB] rounded-2xl border border-gray-100 space-y-4">
-                                            <h3 className="text-lg font-bold text-[#283F3B]">Market Size & Forecast</h3>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                                <div className="flex items-center space-x-3 p-4 bg-white rounded-xl shadow-sm">
-                                                    <BarChart3 className="w-8 h-8 text-primary" />
-                                                    <div>
-                                                        <div className="text-xs text-gray-400 font-bold uppercase">2025 Market Size</div>
-                                                        <div className="text-xl font-bold text-[#283F3B]">$1.97 Billion</div>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center space-x-3 p-4 bg-white rounded-xl shadow-sm border-2 border-primary/20">
-                                                    <TrendingUp className="w-8 h-8 text-primary" />
-                                                    <div>
-                                                        <div className="text-xs text-gray-400 font-bold uppercase">2033 Projected</div>
-                                                        <div className="text-xl font-bold text-primary">$9.68 Billion</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <p className="text-sm text-gray-500 italic mt-4">
-                                                * Market is expected to register a CAGR of 21.74% from 2026 to 2033.
+                            {/* One Continuous Page Content Panel */}
+                            <div className="flex-1 space-y-12 mb-20">
+                                {/* Summary Section */}
+                                <div id="summary" className="bg-white rounded-3xl p-8 sm:p-12 shadow-sm border border-[#F3F2F1] space-y-10">
+                                    <h2 className="text-2xl font-bold text-[#283F3B]">
+                                        {reportData.category} Market Summary
+                                    </h2>
+                                    {reportData.summaryContent ? (
+                                        renderRichText(reportData.summaryContent)
+                                    ) : (
+                                        <>
+                                            <p className="text-lg text-gray-600 leading-relaxed">
+                                                {reportData.fullDescription || reportData.description}
                                             </p>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {activeTab === 'toc' && (
-                                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                        <h2 className="text-2xl font-bold text-[#283F3B] mb-8">Table of Contents</h2>
-                                        <div className="divide-y divide-gray-100 border border-gray-100 rounded-2xl overflow-hidden">
-                                            {reportData.tableOfContents?.map((item, idx) => (
-                                                <div key={idx} className="flex justify-between items-center p-5 hover:bg-gray-50 transition-colors">
-                                                    <span className="font-semibold text-gray-700 capitalize">{item.section}</span>
-                                                    <span className="text-gray-400 text-sm font-mono tracking-tighter">PAGE {item.page}</span>
+                                            <div className="p-8 bg-[#F9FAFB] rounded-2xl border border-gray-100 space-y-4">
+                                                <h3 className="text-lg font-bold text-[#283F3B]">Market Size & Forecast</h3>
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                                    <div className="flex items-center space-x-3 p-4 bg-white rounded-xl shadow-sm">
+                                                        <BarChart3 className="w-8 h-8 text-primary" />
+                                                        <div>
+                                                            <div className="text-xs text-gray-400 font-bold uppercase">2025 Market Size</div>
+                                                            <div className="text-xl font-bold text-[#283F3B]">$1.97 Billion</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center space-x-3 p-4 bg-white rounded-xl shadow-sm border-2 border-primary/20">
+                                                        <TrendingUp className="w-8 h-8 text-primary" />
+                                                        <div>
+                                                            <div className="text-xs text-gray-400 font-bold uppercase">2033 Projected</div>
+                                                            <div className="text-xl font-bold text-primary">$9.68 Billion</div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
+                                                <p className="text-sm text-gray-500 italic mt-4">
+                                                    * Market is expected to register a CAGR of 21.74% from 2026 to 2033.
+                                                </p>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
 
-                                {activeTab === 'segmentation' && (
-                                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                        <h2 className="text-2xl font-bold text-[#283F3B] mb-6">Market Segmentation</h2>
-                                        <p className="text-gray-600 leading-relaxed mb-8">
-                                            The global market is segmented based on component, type, application, and geography. Each segment is analyzed in depth to provide a clear picture of high-growth areas.
-                                        </p>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div className="p-6 bg-primary/5 rounded-2xl border border-primary/10">
-                                                <h4 className="font-bold text-[#283F3B] mb-4 flex items-center">
-                                                    <Layout className="w-4 h-4 mr-2 text-primary" />
-                                                    By Component
-                                                </h4>
-                                                <ul className="space-y-2 text-sm text-gray-600 font-medium">
-                                                    <li>• Hardware</li>
-                                                    <li>• Software</li>
-                                                    <li>• Services</li>
-                                                </ul>
-                                            </div>
-                                            <div className="p-6 bg-[#283F3B]/5 rounded-2xl border border-[#283F3B]/10">
-                                                <h4 className="font-bold text-[#283F3B] mb-4 flex items-center">
-                                                    <Globe className="w-4 h-4 mr-2 text-[#283F3B]" />
-                                                    By Region
-                                                </h4>
-                                                <ul className="space-y-2 text-sm text-gray-600 font-medium">
-                                                    <li>• North America</li>
-                                                    <li>• Europe</li>
-                                                    <li>• Asia Pacific</li>
-                                                    <li>• Latin America & MEA</li>
-                                                </ul>
-                                            </div>
+                                {/* TOC Section */}
+                                <div id="toc" className="bg-white rounded-3xl p-8 sm:p-12 shadow-sm border border-[#F3F2F1]">
+                                    <h2 className="text-2xl font-bold text-[#283F3B] mb-8">Table of Contents</h2>
+                                    {renderRichText(reportData.tocContent) || (
+                                        <div className="p-6 bg-gray-50 rounded-2xl border border-dashed border-gray-200 text-center">
+                                            <p className="text-gray-500 text-sm font-medium">Standard table of contents included in full report.</p>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
+                                </div>
 
-                                {activeTab === 'methodology' && (
-                                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                        <h2 className="text-3xl font-bold text-[#283F3B] mb-8">Methodology</h2>
-                                        <p className="text-lg text-gray-600 leading-relaxed mb-10">
-                                            {reportData.methodology || 'Our research methodology involves a proprietary 360-degree research process, covering primary and secondary research as well as detailed analyst reviews.'}
-                                        </p>
-                                        <div className="flex items-center space-x-12">
-                                            <div className="text-center">
-                                                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                                                    <ShieldCheck className="w-8 h-8 text-primary" />
+                                {/* Segmentation Section */}
+                                <div id="segmentation" className="bg-white rounded-3xl p-8 sm:p-12 shadow-sm border border-[#F3F2F1]">
+                                    <h2 className="text-2xl font-bold text-[#283F3B] mb-6">Market Segmentation</h2>
+                                    {renderRichText(reportData.segmentationContent) || (
+                                        <>
+                                            <p className="text-gray-600 leading-relaxed mb-8">
+                                                The global market is segmented based on component, type, application, and geography. Each segment is analyzed in depth to provide a clear picture of high-growth areas.
+                                            </p>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div className="p-6 bg-primary/5 rounded-2xl border border-primary/10">
+                                                    <h4 className="font-bold text-[#283F3B] mb-4 flex items-center">
+                                                        <Layout className="w-4 h-4 mr-2 text-primary" />
+                                                        By Component
+                                                    </h4>
+                                                    <ul className="space-y-2 text-sm text-gray-600 font-medium">
+                                                        <li>• Hardware</li>
+                                                        <li>• Software</li>
+                                                        <li>• Services</li>
+                                                    </ul>
                                                 </div>
-                                                <div className="text-sm font-bold text-[#283F3B]">Verified Data</div>
-                                            </div>
-                                            <div className="text-center">
-                                                <div className="w-16 h-16 bg-[#283F3B]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                                                    <Clock className="w-8 h-8 text-[#283F3B]" />
+                                                <div className="p-6 bg-[#283F3B]/5 rounded-2xl border border-[#283F3B]/10">
+                                                    <h4 className="font-bold text-[#283F3B] mb-4 flex items-center">
+                                                        <Globe className="w-4 h-4 mr-2 text-[#283F3B]" />
+                                                        By Region
+                                                    </h4>
+                                                    <ul className="space-y-2 text-sm text-gray-600 font-medium">
+                                                        <li>• North America</li>
+                                                        <li>• Europe</li>
+                                                        <li>• Asia Pacific</li>
+                                                        <li>• Latin America & MEA</li>
+                                                    </ul>
                                                 </div>
-                                                <div className="text-sm font-bold text-[#283F3B]">Updated Daily</div>
                                             </div>
-                                        </div>
-                                    </div>
-                                )}
+                                        </>
+                                    )}
+                                </div>
+
+                                {/* Methodology Section */}
+                                <div id="methodology" className="bg-white rounded-3xl p-8 sm:p-12 shadow-sm border border-[#F3F2F1]">
+                                    <h2 className="text-3xl font-bold text-[#283F3B] mb-8">Methodology</h2>
+                                    {renderRichText(reportData.methodology) || (
+                                        <>
+                                            <p className="text-lg text-gray-600 leading-relaxed mb-10">
+                                                Our research methodology involves a proprietary 360-degree research process, covering primary and secondary research as well as detailed analyst reviews.
+                                            </p>
+                                            <div className="flex items-center space-x-12">
+                                                <div className="text-center">
+                                                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                        <ShieldCheck className="w-8 h-8 text-primary" />
+                                                    </div>
+                                                    <div className="text-sm font-bold text-[#283F3B]">Verified Data</div>
+                                                </div>
+                                                <div className="text-center">
+                                                    <div className="w-16 h-16 bg-[#283F3B]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                        <Clock className="w-8 h-8 text-[#283F3B]" />
+                                                    </div>
+                                                    <div className="text-sm font-bold text-[#283F3B]">Updated Daily</div>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
-                        {/* Sidebar */}
-                        <aside className="lg:col-span-1 space-y-8">
+                        {/* Sidebar Widget Area */}
+                        <aside className="lg:col-span-3 space-y-8">
                             {/* Report Details Widget */}
-                            <div className="bg-white rounded-3xl p-8 border border-gray-200 shadow-sm overflow-hidden group">
+                            <div className="bg-white rounded-3xl p-8 border border-gray-200 shadow-sm overflow-hidden group sticky top-24">
                                 <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
                                     <h3 className="text-xl font-extrabold text-[#283F3B]">Report Details</h3>
                                     <FileText className="w-5 h-5 text-gray-300 group-hover:text-primary transition-colors" />
@@ -292,7 +290,7 @@ const ReportDetailPage = () => {
                                         <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 mr-3"></div>
                                         <div className="flex-1">
                                             <span className="text-gray-400 font-bold uppercase text-[10px]">Report ID</span>
-                                            <div className="text-[#283F3B] font-bold">GVR-4-68038-871-8</div>
+                                            <div className="text-[#283F3B] font-bold">GVR-4-68038-{reportData.id.slice(-4)}</div>
                                         </div>
                                     </div>
                                     <div className="flex items-start">
@@ -311,52 +309,25 @@ const ReportDetailPage = () => {
                                     </div>
                                 </div>
                                 <button
-                                    onClick={handlePayment}
+                                    onClick={() => setIsInquiryModalOpen(true)}
                                     className="w-full py-4 bg-primary/10 hover:bg-primary text-primary hover:text-white rounded-2xl font-extrabold transition-all transform active:scale-95 shadow-lg shadow-primary/5 flex items-center justify-center uppercase tracking-widest text-xs"
                                 >
                                     <TrendingUp className="w-4 h-4 mr-2" />
                                     Buy This Report
                                 </button>
-                            </div>
 
-                            {/* Jump to Content Widget */}
-                            <div className="bg-white rounded-3xl p-8 border border-gray-200 shadow-sm">
-                                <h3 className="text-xl font-extrabold text-[#283F3B] mb-6 border-b border-gray-100 pb-4">Jump to Content</h3>
-                                <div className="space-y-4">
-                                    <button onClick={() => setActiveTab('summary')} className={`flex items-start text-left text-sm group ${activeTab === 'summary' ? 'text-primary font-bold' : 'text-gray-600 hover:text-primary'}`}>
-                                        <ChevronRight className={`w-4 h-4 mr-2 mt-0.5 transition-transform ${activeTab === 'summary' ? 'rotate-90' : 'group-hover:translate-x-1'}`} />
-                                        <span>Market Summary</span>
-                                    </button>
-                                    <button className="flex items-start text-left text-sm group text-gray-600 hover:text-primary transition-colors">
-                                        <ChevronRight className="w-4 h-4 mr-2 mt-0.5 group-hover:translate-x-1 transition-transform" />
-                                        <span>Case Study: Automated Detection</span>
-                                    </button>
-                                    <button className="flex items-start text-left text-sm group text-gray-600 hover:text-primary transition-colors">
-                                        <ChevronRight className="w-4 h-4 mr-2 mt-0.5 group-hover:translate-x-1 transition-transform" />
-                                        <span>Market Concentration & Characteristics</span>
-                                    </button>
-                                    <button onClick={() => setActiveTab('toc')} className="flex items-start text-left text-sm group text-gray-600 hover:text-primary transition-colors">
-                                        <ChevronRight className="w-4 h-4 mr-2 mt-0.5 group-hover:translate-x-1 transition-transform" />
-                                        <span>Component Insights</span>
-                                    </button>
+                                <div className="mt-8 pt-8 border-t border-gray-100">
+                                    <div className="bg-[#283F3B] rounded-2xl p-6 text-white text-center">
+                                        <h4 className="font-bold mb-2">Tailored Research</h4>
+                                        <p className="text-xs text-white/60 mb-4">Request 20% free customization for your data needs.</p>
+                                        <button
+                                            onClick={() => setIsInquiryModalOpen(true)}
+                                            className="inline-block text-xs font-bold text-primary-light hover:underline"
+                                        >
+                                            Customize Now →
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-
-                            {/* Tailored Report Widget */}
-                            <div className="bg-[#283F3B] rounded-3xl p-8 text-white relative overflow-hidden group">
-                                <div className="relative z-10">
-                                    <h3 className="text-xl font-extrabold mb-4">Need a Tailored Report?</h3>
-                                    <p className="text-white/60 text-sm mb-8 leading-relaxed">
-                                        Customize this report to your needs — add regions, segments, or data points, with 20% free customization.
-                                    </p>
-                                    <Link
-                                        to="/contact"
-                                        className="w-full py-4 bg-primary/20 hover:bg-primary/40 border border-primary/30 rounded-2xl flex items-center justify-center font-bold transition-all backdrop-blur-sm"
-                                    >
-                                        Customize This Report
-                                    </Link>
-                                </div>
-                                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary opacity-20 rounded-full filter blur-[40px] group-hover:scale-150 transition-transform duration-700"></div>
                             </div>
                         </aside>
                     </div>
@@ -378,7 +349,7 @@ const ReportDetailPage = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                        {allReports.filter(r => r.category === reportData.category && r.id !== reportData.id).slice(0, 3).map((related) => (
+                        {allReportsList.filter(r => r.category === reportData.category && r.id !== reportData.id).slice(0, 3).map((related) => (
                             <div key={related.id} className="bg-[#F9FAFB] rounded-3xl p-8 border border-gray-100 hover:shadow-2xl hover:-translate-y-2 transition-all group">
                                 <div className="flex items-center space-x-2 mb-6 text-primary font-bold text-xs uppercase tracking-widest">
                                     <span className="w-2 h-2 bg-primary rounded-full"></span>
@@ -404,6 +375,13 @@ const ReportDetailPage = () => {
             </section>
 
             <NewsletterSection />
+
+            <InquiryModal
+                isOpen={isInquiryModalOpen}
+                onClose={() => setIsInquiryModalOpen(false)}
+                reportId={reportData.id}
+                reportName={reportData.title}
+            />
         </PageLayout>
     );
 };

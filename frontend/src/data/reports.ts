@@ -3,14 +3,31 @@ export interface Report {
     category: string;
     title: string;
     description: string;
-    fullDescription?: string;
+    fullDescription?: string; // Rich text
     date: string;
     priceAmount: number;
     priceLabel: string;
     pages?: number;
     highlights?: string[];
     tableOfContents?: { section: string; page: number }[];
-    methodology?: string;
+    methodology?: string; // Rich text
+
+    // New Rich Text Section content
+    summaryContent?: string; // Rich text
+    tocContent?: string;      // Rich text (alternative to tableOfContents array)
+    segmentationContent?: string; // Rich text
+    highlightsContent?: string; // Rich text
+}
+
+export interface Inquiry {
+    id: string;
+    reportId: string;
+    reportName: string;
+    name: string;
+    email: string;
+    phone: string;
+    date: string;
+    status: 'new' | 'contacted' | 'closed';
 }
 
 export const allReports: Report[] = [
@@ -42,43 +59,13 @@ export const allReports: Report[] = [
         methodology: 'Our research methodology combines primary interviews with industry experts, secondary data analysis from reliable trade publications, and proprietary quantitative modeling to ensure the highest degree of accuracy.'
     },
     {
-        id: 'thermal-interface',
-        category: 'Technology',
-        title: 'Thermal Interface Materials Market Size, Share & Trends Analysis Report By Product (Tapes & Films, Metal, Elastomeric Pads, Greases And Adhesives, Phase Change Materials), By Application (Telecom, Computers, Medical Devices, Industrial Machinery), By Region, And Segment Forecasts, 2026 - 2033',
-        description: 'The thermal interface materials market size was estimated at USD 4.56 billion in 2025 and is expected to reach USD 11.17 billion by 2033, registering a CAGR of 12.0% from 2026 to 2033. The increasing use of electronic consumer products, such as smartphones and laptops, the adoption of automation i...',
-        fullDescription: 'Thermal Interface Materials (TIMs) are essential for heat management in electronics. This report covers the growing demand for TIMs in 5G infrastructure, EVs, and consumer electronics.',
-        date: 'January 23, 2026',
-        priceAmount: 2999,
-        priceLabel: '$2,999',
-        pages: 128,
-        highlights: [
-            'Analysis of heat dissipation challenges in next-gen CPUs',
-            'Growth trends in liquid metal and phase change materials',
-            'Impact of ESG regulations on material selection'
-        ],
-        tableOfContents: [
-            { section: 'Introduction', page: 1 },
-            { section: 'Market Segmentation', page: 15 },
-            { section: 'Competitive landscape', page: 60 }
-        ],
-        methodology: 'Standard primary and secondary research methods.'
-    },
-    {
-        id: 'us-egg-market',
-        category: 'Consumer Goods',
-        title: 'U.S. Egg Market Size, Share & Trends Analysis Report By Product (Brown Eggs, White Eggs), By Production Category (Cage-Free, Organic, Pasture-Raised), By End Use Application (B2B, B2C), And Segment Forecasts, 2026 - 2033',
-        description: 'The U.S. egg market size was estimated at USD 51.70 billion in 2025 and is projected to reach USD 84.60 billion by 2033, growing at a CAGR of 6.4% from 2026 to 2033. The demand for eggs and egg products in the U.S. is increasing as consumers prefer affordable, nutrient-dense protein sources that a...',
-        date: 'January 22, 2026',
-        priceAmount: 1999,
-        priceLabel: '$1,999'
-    },
-    {
-        id: 'renewable-energy',
-        category: 'Energy & Power',
-        title: 'Global Renewable Energy Market Outlook 2026-2033: Solar, Wind, and Hydro Transformation',
-        description: 'As the world pivots toward sustainability, renewable energy sources are seeing unprecedented growth. This report analyzes the regulatory shifts, investment flows, and technological breakthroughs across the solar and wind industries...',
-        date: 'January 15, 2026',
-        priceAmount: 3200,
-        priceLabel: '$3,200'
+        id: 'telemedicine-outlook',
+        category: 'Healthcare',
+        title: 'Evolution of Telemedicine in Emerging Markets: 2025 Outlook and Growth Opportunities',
+        description: 'Telemedicine is revolutionizing healthcare access in developing regions. This report provides a detailed breakdown of infra requirements, regulatory hurdles, and investment landscapes in APAC and Latin America...',
+        date: 'January 10, 2026',
+        priceAmount: 1899,
+        priceLabel: '$1,899',
+        pages: 110
     }
 ];

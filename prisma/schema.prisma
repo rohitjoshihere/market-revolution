@@ -27,3 +27,41 @@ model User {
   @@map("users")
 }
 
+model Report {
+  id                  String    @id @default(cuid())
+  category            String
+  title               String
+  description         String
+  fullDescription     String?
+  date                String
+  priceAmount         Float
+  priceLabel          String
+  pages               Int?
+  highlights          String? // Stored as comma-separated or JSON string
+  methodology         String?
+  summaryContent      String?
+  tocContent          String?
+  segmentationContent String?
+  highlightsContent   String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  inquiries           Inquiry[]
+
+  @@map("reports")
+}
+
+model Inquiry {
+  id         String   @id @default(cuid())
+  reportId   String
+  reportName String
+  name       String
+  email      String
+  phone      String
+  status     String   @default("new") // "new", "contacted", "closed"
+  date       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  report     Report   @relation(fields: [reportId], references: [id])
+
+  @@map("inquiries")
+}
